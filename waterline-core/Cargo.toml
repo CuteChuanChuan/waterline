@@ -1,0 +1,16 @@
+[package]
+name        = "waterline-core"
+description = "Core library: Iceberg/Parquet metadata parsing + health metrics. No I/O policy."
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+authors.workspace      = true
+license.workspace      = true
+repository.workspace   = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+
+[dev-dependencies]

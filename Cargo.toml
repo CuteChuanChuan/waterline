@@ -1,0 +1,57 @@
+[workspace]
+resolver = "3"
+members = [
+    "waterline-core",
+    "waterline-lint",
+    "waterline-report",
+    "waterline-tui",
+]
+
+# Shared metadata inherited by member crates via `*.workspace = true`.
+[workspace.package]
+version    = "0.1.0"
+edition    = "2024"
+rust-version = "1.96"
+authors    = ["Raymond Hung <yuchuanhung.raymond@gmail.com>"]
+license    = "Apache-2.0"
+repository = "https://github.com/raymond/waterline"
+homepage   = "https://github.com/raymond/waterline"
+readme     = "README.md"
+keywords   = ["iceberg", "parquet", "lakehouse", "observability", "lint"]
+categories = ["command-line-utilities", "database"]
+
+# Shared dependency versions go here as the workspace grows.
+# Members reference them with `<dep>.workspace = true`.
+[workspace.dependencies]
+
+# ─────────────────────────────────────────────
+# Root facade crate (re-exports member APIs).
+# Source lives in ./src.
+# ─────────────────────────────────────────────
+[package]
+name        = "waterline"
+description = "Lakehouse-aware observability & diagnostic tool for Apache Iceberg / Parquet."
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+authors.workspace      = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+readme.workspace       = true
+keywords.workspace     = true
+categories.workspace   = true
+
+[dependencies]
+
+# ─────────────────────────────────────────────
+# Profiles
+# ─────────────────────────────────────────────
+[profile.release]
+lto           = "thin"
+codegen-units = 1
+strip         = "symbols"
+
+[profile.dev]
+opt-level = 0
+debug     = true

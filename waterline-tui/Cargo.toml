@@ -1,0 +1,18 @@
+[package]
+name        = "waterline-tui"
+description = "Interactive terminal explorer (ratatui) for Iceberg tables."
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+authors.workspace      = true
+license.workspace      = true
+repository.workspace   = true
+
+[[bin]]
+name = "waterline-tui"
+path = "src/main.rs"
+
+[dependencies]
+# waterline-core = { path = "../waterline-core" }
+
+[dev-dependencies]
