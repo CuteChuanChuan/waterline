@@ -14,8 +14,8 @@ edition    = "2024"
 rust-version = "1.96"
 authors    = ["Raymond Hung <yuchuanhung.raymond@gmail.com>"]
 license    = "Apache-2.0"
-repository = "https://github.com/raymond/waterline"
-homepage   = "https://github.com/raymond/waterline"
+repository = "https://github.com/CuteChuanChuan/waterline"
+homepage   = "https://github.com/CuteChuanChuan/waterline"
 readme     = "README.md"
 keywords   = ["iceberg", "parquet", "lakehouse", "observability", "lint"]
 categories = ["command-line-utilities", "database"]
@@ -23,6 +23,11 @@ categories = ["command-line-utilities", "database"]
 # Shared dependency versions go here as the workspace grows.
 # Members reference them with `<dep>.workspace = true`.
 [workspace.dependencies]
+anyhow = "1.0.104"
+iceberg = "0.10.1"
+serde_json = "1.0.151"
+thiserror = "2.0.21"
+waterline-core = { path = "waterline-core"}
 
 # ─────────────────────────────────────────────
 # Root facade crate (re-exports member APIs).
