@@ -24,6 +24,8 @@ from pyiceberg.schema import Schema
 from pyiceberg.transforms import DayTransform
 from pyiceberg.types import LongType, NestedField, StringType, TimestampType
 
+DAY_MS = 24 * 60 * 60 * 1000
+
 # Not resolved: on macOS /tmp -> /private/tmp, which would leak into paths.
 DEFAULT_WAREHOUSE = Path("/tmp/waterline-fixtures")
 
@@ -48,7 +50,16 @@ spec = PartitionSpec(PartitionField(3, 1000, DayTransform(), "ts_day"))
 if catalog.table_exists("demo.events"):
     catalog.drop_table("demo.events")
 shutil.rmtree(root / "demo" / "events", ignore_errors=True)
-table = catalog.create_table("demo.events", schema=schema, partition_spec=spec)
+# Table-level retention policy, so lint rules can read thresholds from properties.
+table = catalog.create_table(
+    "demo.events",
+    schema=schema,
+    partition_spec=spec,
+    properties={
+        "history.expire.max-snapshot-age-ms": str(7 * DAY_MS),
+        "history.expire.min-snapshots-to-keep": "3",
+    },
+)
 
 
 def batch(start: int, n: int, day: int) -> pa.Table:
@@ -68,5 +79,21 @@ for i in range(5):
     table.append(batch(i * 100, 100, day=20 + i % 3))
 table.delete(delete_filter="id < 50")
 table.overwrite(batch(10_000, 50, day=25))
+
+# Refs pin non-current snapshots: a tag (intentional retention, not
+# accumulation) and a branch with its own retention settings.
+snapshots = table.metadata.snapshots
+(
+    table.manage_snapshots()
+    .create_tag(snapshots[1].snapshot_id, "v1-release", max_ref_age_ms=30 * DAY_MS)
+    .create_branch(
+        snapshots[3].snapshot_id,
+        "audit",
+        max_ref_age_ms=14 * DAY_MS,
+        max_snapshot_age_ms=2 * DAY_MS,
+        min_snapshots_to_keep=2,
+    )
+    .commit()
+)
 
 print(table.metadata_location)
